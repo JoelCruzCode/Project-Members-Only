@@ -1,4 +1,4 @@
-const pool = require("./pool");
+const pool = require("../config/database");
 
 async function getUser(username) {
   try {
