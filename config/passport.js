@@ -41,4 +41,4 @@ passport.deserializeUser((userId, done) => {
     .catch((error) => done(error));
 });
 
-module.exports = { registerUser, loginCallback, passport };
+module.exports = passport;
