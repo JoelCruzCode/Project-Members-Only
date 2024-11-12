@@ -1,4 +1,4 @@
-const { createUser } = require("../database/queries");
+const { createUser } = require("../models/userModel");
 
 const registerUser = async function (req, res, next) {
   try {
