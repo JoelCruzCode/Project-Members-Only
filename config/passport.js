@@ -26,7 +26,7 @@ const loginCallback = async function (username, password, done) {
 
 const loginStrategy = new localStrategy(loginCallback);
 
-passport.use("login-local", loginStrategy);
+passport.use("local-login", loginStrategy);
 
 // CB function assigns user.id to the session when passport authenticates
 passport.serializeUser((user, done) => {
