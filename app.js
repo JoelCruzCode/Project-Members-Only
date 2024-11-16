@@ -7,7 +7,14 @@ const sessionConfig = require("./config/session");
 const passport = require("./config/passport");
 const registerUser = require("./controllers/userController");
 const errorMiddleWare = require("./middleware/errorMiddleware");
-const authMIddleware = require("./middleware/authMiddleware");
+const renderFlashMiddleWare = require("./middleware/renderMiddleware");
+const authMiddleware = require("./middleware/authMiddleware");
+const {
+  registerValidation,
+  loginValidation,
+  messageValidation,
+  handleValidationErrors,
+} = require("./middleware/validationMiddleware");
 
 const app = express();
 
@@ -23,17 +30,40 @@ app.use(passport.session());
 app.use(errorMiddleWare);
 // Routes
 
-// add flash errors to render after i create utility function
-app.get("/home", render("home-page"));
+app.get("/home", renderFlashMiddleWare("home"));
 
-app.get("/register", render("register"));
+app.get("/register", renderFlashMiddleWare("register"));
 
-app.post("/register", registerUser, (req, res) => {
-  req.flash("success", `Successfully created account ${res.user.username}`);
-  res.redirect("/login");
-});
+app.post(
+  "/register",
+  registerValidation,
+  handleValidationErrors("register"),
+  registerUser,
+  (req, res) => {
+    req.flash("success", `Successfully created account ${res.user.username}`);
+    res.redirect("/login");
+  },
+);
 
-app.get("/login", render("login"));
+app.get("/login", renderFlashMiddleWare("login"));
 
+app.post(
+  "/login",
+  loginValidation,
+  passport.authenticate("local-login", {
+    failureRedirect: "/login",
+    failureFlash: true,
+  }),
+  (req, res) => {
+    req.flash("success", "you have successfully logged in");
+    res.redirect("/home");
+  },
+); //
 app.listen(PORT, console.log(`Listening on port ${PORT}`));
-// git: moved session into its own config file, moved error middleware into its own middleware file, removed unnecessary calls in passport config
+
+//app.post(
+//  "/register",
+//  passport.authenticate("local-register", {
+//    failureRedirect: "/register",
+//    failureFlash: true,
+//  }),
